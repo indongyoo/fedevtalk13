@@ -8,4 +8,4 @@
 
 ### 라이브 코딩에서 간헐적으로 동작을 안했던 이유
 
-자바스크립트 코드에는 문제가 없었는데 css의 `tr:active { background: #ccc; }` 때문에 간헐적으로 `transitionend` 이벤트가 제대로 동작을 안했던 것 같습니다. ㅠ_ㅠ. 평소에는 `requestAnimationFrame`을 사용했었다고... 시간이 없어서 `transitionend`를 썼다고... 이야기하고 싶지만... 시간을 돌리고 싶다.
+자바스크립트 코드에는 문제가 없었는데 css의 `tr:active { background: #ccc; }` 때문에 간헐적으로 `transitionend` 이벤트가 제대로 동작을 안했던 것 같습니다. ㅠ_ㅠ. 평소에는 `requestAnimationFrame`을 사용했었다고... 시간이 없어서 `transitionend`를 썼다고... 이야기하고 싶지만... 시간을 돌리고 싶습니다.

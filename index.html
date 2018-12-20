@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" id="viewport">
+  <title></title>
+  <style>
+    table {
+      width: 100%;
+      text-align: center;
+    }
+    th, td {
+      padding: 5px;
+    }
+    /*tr:active {
+      background: #ccc;
+    }*/
+    .page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      transform: translateY(0);
+      transition: transform 0.6s;
+    }
+    .page.hide {
+      transform: translateY(100%);
+      transition: none;
+    }
+    .page > .title {
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+    }
+    .page > .content {
+      opacity: 1;
+      transition: opacity 0.2s;
+    }
+    .page > .content.hide {
+      opacity: 0;
+      transition: none;
+    }
+    #opener {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+
+<button id="opener">창 띄우기</button>
+
+<script>
+  const products = [
+    { name: '반팔티', price: 15000, quantity: 1, selected: true },
+    { name: '긴팔티', price: 20000, quantity: 2, selected: false },
+    { name: '핸드폰케이스', price: 15000, quantity: 3, selected: true },
+    { name: '후드티', price: 30000, quantity: 4, selected: false },
+    { name: '바지', price: 25000, quantity: 5, selected: false },
+    { name: '반팔티', price: 15000, quantity: 1, selected: true },
+    { name: '긴팔티', price: 20000, quantity: 2, selected: false },
+    { name: '핸드폰케이스', price: 15000, quantity: 3, selected: true },
+    { name: '후드티', price: 30000, quantity: 4, selected: false },
+    { name: '바지', price: 25000, quantity: 5, selected: false },
+    { name: '반팔티', price: 15000, quantity: 1, selected: true },
+    { name: '긴팔티', price: 20000, quantity: 2, selected: false },
+    { name: '핸드폰케이스', price: 15000, quantity: 3, selected: true },
+    { name: '후드티', price: 30000, quantity: 4, selected: false }
+  ];
+
+  const delay = (time, a) => new Promise(resolve =>
+    setTimeout(() => resolve(a), time));
+
+  const Product = {};
+  Product.list = () => products;
+  Product.list700 = () => delay(700, products);
+  Product.list250 = () => delay(250, products);
+  Product.list30 = () => delay(30, products);
+
+  Product.list.tmpl = products => `
+    <table>
+      <tr>
+        <td>이름</td>
+        <td>가격</td>
+        <td>수량</td>
+        <td>합계</td>
+      </tr>
+      ${products.map(p => `
+        <tr>
+          <td>${p.name}</td>
+          <td>${p.price}</td>
+          <td>${p.quantity}</td>
+          <td>${p.price * p.quantity}</td>
+        </tr>
+      `).join('')}
+    </table>
+  `;
+
+  const el = html => {
+    const wrap = document.createElement('div');
+    wrap.innerHTML = html;
+    return wrap.children[0];
+  };
+
+  const $ = (sel, parent = document) => parent.querySelector(sel);
+
+  const append = (parent, child) => parent.appendChild(child);
+
+  const editClass = method => (name, el) => (el.classList[method](name), el);
+
+  const addClass = editClass('add');
+
+  const removeClass = editClass('remove');
+
+  const tap = f => (a, ...bs) => (f(a, ...bs), a);
+
+  const show = el => new Promise(resolve =>
+    setTimeout(() => {
+      removeClass('hide', el)
+        .addEventListener('transitionend', () => resolve(el), { once: true });
+    }, 1));
+
+  const openPage = async (title, dataFn, tmplFn) =>
+    show(append(
+      $('body'),
+      el(`
+        <div class="page hide">
+          <h2 class="title">${title}</h2>
+          <div class="content">${tmplFn(await dataFn())}</div>
+        </div>
+      `)));
+
+  const openPage2 = async (title, dataFn, tmplFn) => {
+    const dataP = dataFn();
+    const page = await show(append(
+      $('body'),
+      el(`
+        <div class="page hide">
+          <h2 class="title">${title}</h2>
+          <div class="content"></div>
+        </div>
+      `)));
+
+    show(tap(append)(
+      addClass('hide', $('.content', page)),
+      el(tmplFn(await dataP))));
+  };
+
+  const isPromise = a => a instanceof Promise;
+
+  const openPage3 = async (title, dataFn, tmplFn) => {
+    const dataP = dataFn();
+
+    const page = await show(append(
+      $('body'),
+      el(`
+        <div class="page hide">
+          <h2 class="title">${title}</h2>
+          <div class="content">${isPromise(dataP) ? '' : tmplFn(dataP)}</div>
+        </div>
+      `)));
+
+    isPromise(dataP) &&
+      show(tap(append)(
+        addClass('hide', $('.content', page)),
+        el(tmplFn(await dataP))));
+  };
+
+  const nop = Symbol('nop');
+
+  const isNop = a => a == nop;
+
+  const openPage4 = async (title, dataFn, tmplFn) => {
+    const dataP = dataFn();
+    const data = await Promise.race([
+      dataP,
+      delay(50, nop)
+    ]);
+
+    const page = await show(append(
+      $('body'),
+      el(`
+        <div class="page hide">
+          <h2 class="title">${title}</h2>
+          <div class="content">${isNop(data) ? '' : tmplFn(data)}</div>
+        </div>
+      `)));
+
+    isNop(data) &&
+      show(tap(append)(
+        addClass('hide', $('.content', page)),
+        el(tmplFn(await dataP))));
+  };
+
+  let i = 0;
+  document.addEventListener('click', () =>
+    openPage4(
+      '상품 목록',
+      i++ % 2 ? Product.list700 : Product.list30,
+      // Product.list700,
+      // Product.list30,
+      Product.list.tmpl));
+
+
+</script>
+
+</body>
+</html>

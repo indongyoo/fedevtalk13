@@ -12,9 +12,9 @@
     th, td {
       padding: 5px;
     }
-    /*tr:active {
-      background: #ccc;
-    }*/
+    /*tr:active {*/
+      /*background: #ccc;*/
+    /*}*/
     .page {
       position: fixed;
       top: 0;
@@ -46,6 +46,7 @@
   </style>
 </head>
 <body>
+
 
 <script>
   const products = [
@@ -111,11 +112,13 @@
 
   const tap = f => (a, ...bs) => (f(a, ...bs), a);
 
-  const show = el => new Promise(resolve =>
+  const transitionend = f => el => new Promise(resolve =>
     setTimeout(() => {
-      removeClass('hide', el)
-        .addEventListener('transitionend', () => resolve(el), { once: true });
+      f(el);
+      el.addEventListener('transitionend', () => resolve(el), { once: true });
     }, 1));
+
+  const show = transitionend(el => removeClass('hide', el));
 
   const openPage = async (title, dataFn, tmplFn) =>
     show(append(
@@ -194,10 +197,13 @@
     openPage4(
       '상품 목록',
       i++ % 2 ? Product.list700 : Product.list30,
-      // Product.list700,
-      // Product.list30,
       Product.list.tmpl));
 
+  // document.addEventListener('click', () =>
+  //   openPage4(
+  //     '다른 뷰',
+  //     () => delay(40, 'hi~'),
+  //     str => `<i style="padding: 50px; display: block;">${str}</i>`));
 
 </script>
 

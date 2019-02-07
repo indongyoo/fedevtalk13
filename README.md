@@ -2,6 +2,7 @@
 
  - 제목 - Template literals,  Promise,  동시성, 함수형 프로그래밍
  - 부제 - http://en.marpple.com 개발 경험기
+ - [영상 다시보기](https://tv.naver.com/v/5289966)
  - [마플 영문 서비스 안드로이드 웹뷰 구동 영상](https://youtu.be/0Wc7CELvoiI)
  - [슬라이드](https://www.slideshare.net/ssuser2ecf32/template-literals-promise-126352081)
  - [FEDevtalk Github](https://github.com/NAVER-FEPlatform/FEDevtalk/blob/master/13_fedevtalk.md)
